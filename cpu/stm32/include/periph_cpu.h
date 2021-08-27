@@ -269,6 +269,54 @@ enum {
 };
 
 /**
+ * @name    Implementation specific types and defines for periph_gpio_ng
+ * @{
+ */
+/* While IRQs are masked, no events are detected on STM32 */
+#define HAS_GPIO_NG_IRQ_UNMASK 0
+
+#define HAVE_GPIO_PULL_STRENGTH_T
+typedef enum {
+    GPIO_PULL_WEAKEST = 0,
+    GPIO_PULL_WEAK = 0,
+    GPIO_PULL_STRONG = 0,
+    GPIO_PULL_STRONGEST = 0
+} gpio_pull_strength_t;
+
+#define HAVE_GPIO_DRIVE_STRENGTH_T
+typedef enum {
+    GPIO_DRIVE_WEAKEST = 0,
+    GPIO_DRIVE_WEAK = 0,
+    GPIO_DRIVE_STRONG = 0,
+    GPIO_DRIVE_STRONGEST = 0
+} gpio_drive_strength_t;
+
+#define HAVE_GPIO_IRQ_TRIG_T
+/*
+ * Layout:
+ *      7 6 5 4 3 2 1 0
+ *      +-+-+-+-+-+-+-+-+
+ *      |   RFU   |T|L|H|
+ *      +-+-+-+-+-+-+-+-+
+ *
+ * RFU = Reserved for future use
+ * T   = Trigger mode (1 = Level triggered, 0 = Edge triggered)
+ * L   = Low (1 = low level / falling edge)
+ * H   = High (1 = high level / rising edge)
+ *
+ * Note: This layout overlaps with gpio_flank_t by intent
+ */
+typedef enum {
+    GPIO_TRIGGER_EDGE_RISING    = 0x1,
+    GPIO_TRIGGER_EDGE_FALLING   = 0x2,
+    GPIO_TRIGGER_EDGE_BOTH      = GPIO_TRIGGER_EDGE_RISING | GPIO_TRIGGER_EDGE_FALLING,
+    GPIO_TRIGGER_LEVEL          = 0x4,
+    GPIO_TRIGGER_LEVEL_HIGH     = GPIO_TRIGGER_LEVEL | GPIO_TRIGGER_EDGE_RISING,
+    GPIO_TRIGGER_LEVEL_LOW      = GPIO_TRIGGER_LEVEL | GPIO_TRIGGER_EDGE_FALLING,
+} gpio_irq_trig_t;
+/** @} */
+
+/**
  * @brief   Define a magic number that tells us to use hardware chip select
  *
  * We use a random value here, that does clearly differentiate from any possible

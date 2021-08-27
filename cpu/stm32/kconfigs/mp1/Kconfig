@@ -10,6 +10,9 @@ config CPU_FAM_MP1
     select CPU_CORE_CORTEX_M4F
     select HAS_CORTEXM_MPU
     select HAS_CPU_STM32MP1
+    select HAS_PERIPH_GPIO_NG
+    select HAS_PERIPH_GPIO_NG_IRQ
+    select HAS_PERIPH_GPIO_NG_IRQ_LEVEL_TRIGGERED
 
 config CPU_FAM
     default "mp1" if CPU_FAM_MP1

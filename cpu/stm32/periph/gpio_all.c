@@ -31,7 +31,11 @@
 #include "periph/gpio.h"
 #include "periph_conf.h"
 
-#ifdef MODULE_PERIPH_GPIO_IRQ
+#ifdef MODULE_PERIPH_GPIO_NG
+#include "periph/gpio_ng.h"
+#endif
+
+#if defined(MODULE_PERIPH_GPIO_IRQ) && !defined(MODULE_PERIPH_GPIO_NG)
 /**
  * @brief   The STM32F0 family has 16 external interrupt lines
  */
@@ -183,16 +187,6 @@ void gpio_init_analog(gpio_t pin)
     _port(pin)->MODER |= (0x3 << (2 * _pin_num(pin)));
 }
 
-void gpio_irq_enable(gpio_t pin)
-{
-    EXTI_REG_IMR |= (1 << _pin_num(pin));
-}
-
-void gpio_irq_disable(gpio_t pin)
-{
-    EXTI_REG_IMR &= ~(1 << _pin_num(pin));
-}
-
 int gpio_read(gpio_t pin)
 {
     return (_port(pin)->IDR & (1 << _pin_num(pin)));
@@ -227,6 +221,26 @@ void gpio_write(gpio_t pin, int value)
 }
 
 #ifdef MODULE_PERIPH_GPIO_IRQ
+void gpio_irq_enable(gpio_t pin)
+{
+    EXTI_REG_IMR |= (1 << _pin_num(pin));
+}
+
+void gpio_irq_disable(gpio_t pin)
+{
+    EXTI_REG_IMR &= ~(1 << _pin_num(pin));
+}
+
+#  ifdef MODULE_PERIPH_GPIO_NG
+/* We cannot have two competing implementations of GPIO IRQs, as only one ISR can be registered.
+ * Implement periph_gpio_irq on top of periph_gpio_ng if both are used */
+int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
+                  gpio_cb_t cb, void *arg)
+{
+    gpio_init(pin, mode);
+    return gpio_ng_irq((gpio_port_t)_port(pin), _pin_num(pin), (gpio_trigger_t)flank, cb, arg);
+}
+#  else
 int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
                   gpio_cb_t cb, void *arg)
 {
@@ -370,4 +384,5 @@ void isr_exti(void)
     }
     cortexm_isr_end();
 }
+#  endif /* MODULE_PERIPH_GPIO_NG */
 #endif /* MODULE_PERIPH_GPIO_IRQ */
