@@ -169,6 +169,22 @@ config HAS_PERIPH_GPIO_TAMPER_WAKE
         Indicates that Tamper Detection can be used to wake the CPU from
         Deep Sleep.
 
+config HAS_PERIPH_GPIO_NG
+    bool
+    help
+        Indicates that the gpio_ng driver is implemented for the MCU's GPIO peripheral.
+
+config HAS_PERIPH_GPIO_NG_IRQ
+    bool
+    help
+        Indicates that IRQ support for the gpio_ng driver is implemented for the MCU's GPIO
+        peripheral.
+
+config HAS_PERIPH_GPIO_NG_IRQ_LEVEL_TRIGGERED
+    bool
+    help
+        Indicates that level triggered IRQs are available (or emulated).
+
 config HAS_PERIPH_HWRNG
     bool
     help
