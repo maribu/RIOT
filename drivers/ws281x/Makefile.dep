@@ -1,8 +1,11 @@
-FEATURES_REQUIRED_ANY += cpu_core_atmega|arch_esp32|arch_native
+FEATURES_REQUIRED_ANY += cpu_core_atmega|periph_busywait|arch_esp32|arch_native
 
 ifeq (,$(filter ws281x_%,$(USEMODULE)))
   ifneq (,$(filter cpu_core_atmega,$(FEATURES_USED)))
     USEMODULE += ws281x_atmega
+  endif
+  ifneq (,$(filter periph_busywait,$(FEATURES_USED)))
+    USEMODULE += ws281x_busywait
   endif
   ifneq (,$(filter arch_native,$(FEATURES_USED)))
     USEMODULE += ws281x_vt100
@@ -14,6 +17,11 @@ endif
 
 ifneq (,$(filter ws281x_atmega,$(USEMODULE)))
   FEATURES_REQUIRED += cpu_core_atmega
+endif
+
+ifneq (,$(filter ws281x_busywait,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_gpio_ng
+  FEATURES_REQUIRED += periph_busywait
 endif
 
 USEMODULE += xtimer
