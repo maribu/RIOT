@@ -39,6 +39,7 @@ config CPU_ARCH
 config CPU_CORE_CORTEX_M
     bool
     select HAS_CPU_CORE_CORTEXM
+    select HAS_PERIPH_BUSYWAIT
     select HAS_PERIPH_PM
     select HAS_PUF_SRAM
     select HAS_PICOLIBC
