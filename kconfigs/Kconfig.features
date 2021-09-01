@@ -95,6 +95,11 @@ config HAS_PERIPH_ADC
     help
         Indicates that an ADC peripheral is present.
 
+config HAS_PERIPH_BUSYWAIT
+    bool
+    help
+        Indicates that highly accurate (as in nanoseconds) busy waiting is implemented.
+
 config HAS_PERIPH_CAN
     bool
     help
