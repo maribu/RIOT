@@ -2,7 +2,9 @@ USEMODULE += msp430_common
 USEMODULE += msp430_common_periph
 USEMODULE += periph
 
+FEATURES_REQUIRED_ANY += newlib|picolibc
 ifneq (,$(filter newlib,$(USEMODULE)))
+  # use the nano-specs of Newlib when available
   DEFAULT_MODULE += newlib_nano
 endif
 
