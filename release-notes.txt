@@ -56,15 +56,15 @@ System Libraries
 + sys/libc: add endian.h (#20310)
 + sys/shell/lwip: add IPv4 configuration to lwip ifconfig command (#19849)
 + tests: Add NULL pointer argument test for fmt_lpad/to_lower/str (#20344)
-* makefiles/cargo: Remove CARGO_CHANNEL and other simplifications (#20319)
+* makefiles/cargo: Remove CARGO_CHANNEL, add `make info-rust` and simplify Cargo invocations (#20319)
 * Monitoring malloc usage (#20363)
-* rust: Make dependencies visible (#18684)
+* rust: Increase Cargo.lock stability and usefulness (#18684)
 * sys/checksum: Remove deprecated crc16_ccitt functions (#20527)
 * sys/hashes: support for SHA-{384,512/{224,256}} (#20484)
 * sys/isrpipe/read_timeout: don't set up timer if data is available (#20558)
 * sys/newlib_syscalls_default: fix race condition in __sinit() (#20392)
 * sys/psa_crypto: use SHA256 CSPRNG as default (#20460)
-* sys/shell/doc: Shell access is root access (#20546)
+* sys/shell: Document that shell access means root access (#20546)
 * sys/suit: Remove deprecated suit_coap_run function (#20528)
 * sys/suit: return error when URL buffer is too small (#20559)
 * sys/tiny_strerror: fix compilation on LLVM (#20483)
@@ -109,13 +109,11 @@ Boards
 * boards/feather-nrf52840-sense: declare lsm6ds33 accelerometer (#20436)
 * boards/feather-nrf52840-sense: use generic lsm6dsxx (#20526)
 * cpu/msp430/f2xx: clean up periph_uart,periph_spi (#20357)
-* cpu/native: Enable Rust on 64bit (#20339)
 * cpu/nrf9160: fix GPIOTE ISR (#20560)
 * cpu/samd5x write can driver (#19736)
 * cpu/stm32u5: Enable rtc support (#20521)
 * drivers/lsm6dsxx: refactoring Lsm6dsl into common driver Lsm6dsxx (#20170)
-* native64: Separate board for 64-bit native (#20335)
-* native: Linux/x86_64 support (#20315)
++ native64: New board for 64-bit native Linux / x86_64 (#20315, #20335, #20339)
 
 CPU
 ---
@@ -155,8 +153,7 @@ Documentation
 + doc: Add guide for dev setup on Windows (#20426)
 + doc: add terminal program configuration (#20493)
 + doc: doxygen: add "Topics" to menus (#20443)
-+ doxygen: added community processes (import from Wiki) (#20496)
-+ doxygen: added vision.md imported from Wiki (#20491)
++ doc: Move community processes and vision (import from Wiki) (#20496, #20491)
 * boards/feather-nrf52840*: doc cleanup (#20422)
 * boards/nucleo-c031c6: fix ADC and enhance doc (#20502)
 * doc/roadmap: Make working 6LBR a goal (#20351)
@@ -165,14 +162,14 @@ Documentation
 Build System / Tooling
 ----------------------
 
-+ build sytem: add `--no-warn-rwx-segments` to linker (#20381)
++ build system: add `--no-warn-rwx-segments` to linker (#20381)
 + dist/tools/mspdebug: build from source (#20345)
 * Avoid using egrep (#20522)
 * build system: Improve failure mode for FEAUTRES_REQUIRED_ANY (#20408)
 * dist/tools/dhcpv6-pd_ia: recognize Debian correctly (#20487)
 * Enable compile_and_test_for_board to skip if nothing changed (#19546)
 * tools/openocd: define SWD_EN signal for tigard (#20507)
-* tree wide: accomodate RISC-V toolchain update (#20380)
+* tree wide: accommodate RISC-V toolchain update (#20380)
 
 Kconfig
 -------
@@ -185,7 +182,6 @@ Examples
 * examples/filesystem: Update README and increase default stack size (#20439)
 * examples/psa_crypto: Fix modules to run ECDSA on SEs (#20461)
 * examples/wakaama: rename to lwm2m (#20327)
-* exmple > example in Cargo.toml comment (#20399)
 
 Testing
 -------
@@ -236,6 +232,7 @@ Deprecations (3)
 * gnrc_mac / gnrc_lwmac / gnrc_gomach: Deprecate modules (#20512)
 * gnrc_netif: remove deprecated CONFIG_GNRC_NETIF_LORAWAN_NETIF_HDR (#20515)
 * sys/phydat: Remove deprecated print function (#20529)
+* Deprecate MCU preprocessor defines (#20397)
 
 Removals (4)
 ------------
@@ -430,7 +427,7 @@ Other issues (68)
 * 2023.04 release bug tracking (#19469)
 * [tracking] Bugs found by the peripheral selftest (#20071)
 * [TRACKING] sys/shell refactoring. (#12105)
-* [tracking] unnessesary use of floating point arithmetics (#19614)
+* [tracking] unnecessary use of floating point arithmetic (#19614)
 * _NVIC_SystemReset stuck in infinite loop when calling pm_reboot
   through shell after flashing with J-Link (#13044)
 * `make term` no longer works with JLinkExe v6.94 (#16022)
