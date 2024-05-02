@@ -20,7 +20,41 @@ About this release
 
 The 2024.04 release includes:
 
-## List of notable changes here ##
+## Removal of KConfig Based Dependency Modelling
+
+We [decided in 2020][kconfig-vma-start] to transition to a KConfig based
+modelling of module dependencies. After more than three years the path to
+completion of this transition was not clear and effort to push this forward has
+ceased. After a [final call][kconfig-final-call] for volunteers to bring this
+effort to completion has gone unanswered, we pulled the plug in this release.
+
+Hence, selecting modules from the `Makefile` using the `USEMODULE` variable is,
+which has been the default even during the KConfig migration, is now the only
+way to select modules.
+
+For configuration knobs KConfig still is an option. We agreed to push this
+forward [and to make KConfig the default][kconfig-for-configuration], but with
+a weak deadline for completion to avoid a similar outcome.
+
+[kconfig-vma-start]: https://github.com/RIOT-OS/RIOT/wiki/VMA-2020-05-minutes#kconfig-leandro--jos%C3%A9
+[kconfig-final-call]: https://forum.riot-os.org/t/last-chance-for-kconfig-dependency-modelling/4068
+[kconfig-for-configuration]: https://forum.riot-os.org/t/notes-virtual-maintainer-assembly-vma-2024-02/4118#kconfig-configuration-modelling-18
+
+## 64-Bit Support for the Virtual Native Board
+
+The `native64` board can now be used to simulate a RIOT app in a Linux process
+on 64-bit systems without the need of a multilib toolchain. Given that with
+Ubuntu one of the most popular Linux distros plans to drop multilib support,
+the ability to keep simulation RIOT apps hassle-free on Ubuntu in the future
+is a major milestone.
+
+## RIOT Ported to the GBA
+
+Will the RIOT port to the GBA give a new live to the legacy gaming platform and
+rise in popularity beyond the Switch? Likely not, but running RIOT on the GBA
+certainly is cool and will give us, the RIOT community, lot's of joy.
+
+## Statistics
 
 210 pull requests, composed of 446 commits, have been merged since the
 last release, and 4 issues have been solved. 42 people contributed with
@@ -51,7 +85,6 @@ System Libraries
 
 + add error check of aes_encrypt() (#15576)
 + event_periodic_callback: add event_periodic_callback_create() (#20459)
-+ examples/rust-gcoap: Add SAUL (#17554)
 + shell/cmds: add udptty command (#19742)
 + sys/libc: add endian.h (#20310)
 + sys/shell/lwip: add IPv4 configuration to lwip ifconfig command (#19849)
@@ -147,9 +180,9 @@ Device Drivers
 Documentation
 -------------
 
+* RDM: Naming boards (#18589)
 + build system: add list of features for documentation and sanity
   checking (#20366)
-+ doc: add graphic to vision page (#20498)
 + doc: Add guide for dev setup on Windows (#20426)
 + doc: add terminal program configuration (#20493)
 + doc: doxygen: add "Topics" to menus (#20443)
@@ -157,7 +190,8 @@ Documentation
 * boards/feather-nrf52840*: doc cleanup (#20422)
 * boards/nucleo-c031c6: fix ADC and enhance doc (#20502)
 * doc/roadmap: Make working 6LBR a goal (#20351)
-* doc: Allow resizing of doxygen side-nav (#20511)
+* doc: Allow resizing of doxygen side-nav (#20511, 20631)
+* README: Change Section titles from all caps to regular (#20405)
 
 Build System / Tooling
 ----------------------
@@ -179,6 +213,7 @@ Kconfig
 Examples
 --------
 
++ examples/rust-gcoap: Add SAUL (#17554)
 * examples/filesystem: Update README and increase default stack size (#20439)
 * examples/psa_crypto: Fix modules to run ECDSA on SEs (#20461)
 * examples/wakaama: rename to lwm2m (#20327)
@@ -214,14 +249,11 @@ API Changes
 
 Uncategorized
 -------------
-+ rdm/README: add rdm0003 to the list (#20469)
 + release-notes.txt: add 2024.01 release notes (#20350)
 + Roadmap: Add Home-Assistant integration on the roadmap (#20403)
 + vscode: Add hard-coded path to compile_commands.json (#20417)
-* RDM: Naming boards (#18589)
-* README: Change Section titles from all caps to regular (#20405)
 
-And 59 minor changes.
+And 61 minor changes.
 
 Deprecations
 ============
@@ -231,7 +263,6 @@ Deprecations (3)
 
 * gnrc_mac / gnrc_lwmac / gnrc_gomach: Deprecate modules (#20512)
 * gnrc_netif: remove deprecated CONFIG_GNRC_NETIF_LORAWAN_NETIF_HDR (#20515)
-* sys/phydat: Remove deprecated print function (#20529)
 * Deprecate MCU preprocessor defines (#20397)
 
 Removals (4)
@@ -241,6 +272,7 @@ Removals (4)
 - periph_usbdev: remove deprecated event flag (#20488)
 - treewide: remove deprecated modules (#20471)
 - treewide: remove deprecated shell_commands module (#20485)
+- sys/phydat: Remove deprecated print function (#20529)
 
 Bug fixes (18)
 ==============
@@ -508,8 +540,9 @@ Fixed Issues since the last release (2024.01)
 - 6ln RA PIO with L flag set is not ignored (#20377)
 - riotboot/nrf52840dk: flashing slot1 with JLINK fails (#14576)
 - sock_dns: Security issues (including remote code execution) (#10739)
+- native: 64-Bit support? (#6603)
 
-4 fixed issues since last release (2024.01)
+5 fixed issues since last release (2024.01)
 
 
 Acknowledgements
