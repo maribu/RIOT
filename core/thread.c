@@ -29,7 +29,7 @@
 #include "thread.h"
 #include "irq.h"
 
-#include "bitarithm.h"
+#include "compiler_hints.h"
 #include "sched.h"
 
 #define ENABLE_DEBUG 0
@@ -199,9 +199,6 @@ kernel_pid_t thread_create(char *stack, int stacksize, uint8_t priority,
         return -EINVAL;
     }
 
-#ifdef DEVELHELP
-    int total_stacksize = stacksize;
-#endif
 #ifndef CONFIG_THREAD_NAMES
     (void)name;
 #endif
@@ -239,8 +236,8 @@ kernel_pid_t thread_create(char *stack, int stacksize, uint8_t priority,
      * Make sure the TLS area is aligned as required and that the
      * resulting stack will also be aligned as required
      */
-    thread->tls = (void *) ((uintptr_t) tls & ~ (TLS_ALIGN - 1));
-    stacksize = (char *) thread->tls - stack;
+    thread->tls = (void *)((uintptr_t) tls & ~(TLS_ALIGN - 1));
+    stacksize = (char *)thread->tls - stack;
 
     _init_tls(thread->tls);
 #endif
@@ -293,7 +290,12 @@ kernel_pid_t thread_create(char *stack, int stacksize, uint8_t priority,
 #endif
 
 #ifdef DEVELHELP
-    thread->stack_size = total_stacksize;
+    /* Actual stack size depends on whether or not arch specific code also
+     * allocates stuff in the stack. For all currently supported platforms
+     * the stack grows downwards from thread->sp to thread->stack_start, so
+     * the diff will be the actual thread's stack size. */
+    assume((uintptr_t)thread->sp > (uintptr_t)thread->stack_start);
+    thread->stack_size = (uintptr_t)thread->sp - (uintptr_t)thread->stack_start;
 #endif
 #ifdef CONFIG_THREAD_NAMES
     thread->name = name;
