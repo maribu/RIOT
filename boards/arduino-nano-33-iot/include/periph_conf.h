@@ -118,7 +118,7 @@ static const tc32_conf_t timer_config[] = {
  */
 static const uart_conf_t uart_config[] = {
     {
-        .dev      = &SERCOM5->USART,
+        .sercom   = 5,
         .rx_pin   = GPIO_PIN(PB,23),
         .tx_pin   = GPIO_PIN(PB,22),
 #ifdef MODULE_SAM0_PERIPH_UART_HW_FC
@@ -132,9 +132,6 @@ static const uart_conf_t uart_config[] = {
         .gclk_src = SAM0_GCLK_MAIN,
     }
 };
-
-/* interrupt function name mapping */
-#define UART_0_ISR          isr_sercom5
 
 #define UART_NUMOF          ARRAY_SIZE(uart_config)
 /** @} */
@@ -211,7 +208,7 @@ static const adc_conf_chan_t adc_channels[] = {
  */
 static const i2c_conf_t i2c_config[] = {
     {
-        .dev      = &(SERCOM4->I2CM),
+        .sercom   = 4,
         .speed    = I2C_SPEED_NORMAL,
         .scl_pin  = GPIO_PIN(PB, 9),
         .sda_pin  = GPIO_PIN(PB, 8),
@@ -229,7 +226,7 @@ static const i2c_conf_t i2c_config[] = {
  */
 static const spi_conf_t spi_config[] = {
     {   /* Connected to NINA W102 */
-        .dev      = &SERCOM2->SPI,
+        .sercom   = 2,
         .miso_pin = GPIO_PIN(PA, 13),
         .mosi_pin = GPIO_PIN(PA, 12),
         .clk_pin  = GPIO_PIN(PA, 15),
@@ -241,13 +238,13 @@ static const spi_conf_t spi_config[] = {
         .gclk_src = SAM0_GCLK_MAIN,
     },
     {
-        .dev = &SERCOM3->SPI,
+        .sercom   = 3,
         .miso_pin = GPIO_PIN(PA, 19),
         .mosi_pin = GPIO_PIN(PA, 16),
-        .clk_pin = GPIO_PIN(PA, 17),
+        .clk_pin  = GPIO_PIN(PA, 17),
         .miso_mux = GPIO_MUX_D,
         .mosi_mux = GPIO_MUX_D,
-        .clk_mux = GPIO_MUX_D,
+        .clk_mux  = GPIO_MUX_D,
         .miso_pad = SPI_PAD_MISO_3,
         .mosi_pad = SPI_PAD_MOSI_0_SCK_1,
         .gclk_src = SAM0_GCLK_MAIN,

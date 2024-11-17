@@ -317,6 +317,83 @@ typedef enum {
 #endif /* ndef DOXYGEN */
 
 /**
+ * @name    Common SERCOM Interface
+ * @{
+ */
+/**
+ * @brief   Identifier of a SERCOM
+ */
+typedef uint8_t sercom_t;
+
+/**
+ * @brief   SERCOM configuration for @ref sercom_acquire
+ */
+typedef struct {
+    uint32_t ctrla; /**< Value to write to the CTRLA register */
+    uint32_t ctrlb; /**< Value to write to the CTRLB register */
+    uint16_t baud;  /**< Value to write to the BAUD register */
+    uint8_t gclk;   /**< Generator clock */
+} sercom_conf_t;
+
+/**
+ * @brief   IRQ callback to call on IRQs triggered by the SERCOM
+ *
+ * @param[in]   sercom      The ID of the SERCOM that triggered the IRQ
+ * @param[in]   arg         The argument provided on @ref sercom_acquire
+ */
+typedef void (*sercom_irq_cb_t)(void *arg);
+
+/**
+ * @brief   Get the pointer to the base register of the given SERCOM
+ *
+ * @param[in] sercom    Number of the SERCOM to get the base address of
+ *
+ * @return              base register address
+ *
+ * @details This function is marked as `const` to indicate to the compiler that
+ *          it has no side-effects and will always return the same value when
+ *          called with the same argument. This enables the compiler to
+ *          optimize out identical function calls.
+ */
+__attribute__((const))
+Sercom *sercom_get_baseaddr(sercom_t sercom);
+
+/**
+ * @brief   Acquire exclusive access to the given SERCOM, enable it, and
+ *          configure it as specified
+ * @param[in]   sercom      The SERCOM to acquire
+ * @param[in]   conf        The configuration to apply
+ * @param[in]   irq_cb      Function to call on IRQ or `NULL`
+ * @param[in]   irq_arg     Argument to pass to @p irq_cb
+ *
+ * @note    This function may block if the SERCOM is already in use to provide
+ *          another serial interface until it is release.
+ * @warning Beware: UART buses are typically kept acquired and never released.
+ *
+ * @pre     The pins the caller wants to route to the SERCOM are not routed to
+ *          it prior to the call (as the SERCOM may still be active). Only
+ *          after this function returns, pins may be routed to the SERCOM.
+ * @post    The SERCOM is exclusively held by the caller
+ * @post    The SERCOM is configured as asked for in @p conf
+ * @post    If @p irq_cb was `NULL`, the corresponding IRQ(s) is/are disabled
+ *          in the NIVC. Otherwise they are enabled but masked.
+ */
+void sercom_acquire(sercom_t sercom, const sercom_conf_t *conf,
+                    sercom_irq_cb_t irq_cb, void *irq_arg);
+
+/**
+ * @brief   Release exclusive access to the given SERCOM and disable it
+ *          (low power mode)
+ * @param[in]   sercom  The SERCOM to release
+ *
+ * @pre     The pins that were routed to this SERCOM are no longer routed to it,
+ *          so that other pins can be routed to it right after the SERCOM is
+ *          release to provide other serial buses
+ */
+void sercom_release(sercom_t sercom);
+/** @} */
+
+/**
  * @brief   Size of the UART TX buffer for non-blocking mode.
  */
 #ifndef UART_TXBUF_SIZE
@@ -337,7 +414,6 @@ typedef enum {
  *          in Asynchronous Fractional mode
  */
 typedef struct {
-    SercomUsart *dev;       /**< pointer to the used UART device */
     gpio_t rx_pin;          /**< pin used for RX */
     gpio_t tx_pin;          /**< pin used for TX */
 #ifdef MODULE_PERIPH_UART_HW_FC
@@ -348,6 +424,7 @@ typedef struct {
     uart_rxpad_t rx_pad;    /**< pad selection for RX line */
     uart_txpad_t tx_pad;    /**< pad selection for TX line */
     uart_flag_t flags;      /**< set optional SERCOM flags */
+    sercom_t sercom;        /**< The SERCOM to use */
     uint8_t gclk_src;       /**< GCLK source which supplys SERCOM */
 } uart_conf_t;
 
@@ -434,6 +511,15 @@ typedef struct {
 } pwm_conf_t;
 
 /**
+ * @brief   Special SERCOM ID to identify the QSPI
+ *
+ * When module `periph_spi_on_qspi` is used, we need to identify in the SPI
+ * config that the SPI is not implemented using a SERCOM but using a QSPI
+ * peripheral. This magic invalid SERCOM id is to be used for that.
+ */
+#define SERCOM_ID_QSPI      0xff
+
+/**
  * @brief   Available values for SERCOM SPI MISO pad selection
  */
 typedef enum {
@@ -496,7 +582,6 @@ typedef enum {
  * @brief   SPI device configuration
  */
 typedef struct {
-    void *dev;              /**< pointer to the used SPI device */
     gpio_t miso_pin;        /**< used MISO pin */
     gpio_t mosi_pin;        /**< used MOSI pin */
     gpio_t clk_pin;         /**< used CLK pin */
@@ -505,7 +590,8 @@ typedef struct {
     gpio_mux_t clk_mux;     /**< alternate function for CLK pin (mux) */
     spi_misopad_t miso_pad; /**< pad to use for MISO line */
     spi_mosipad_t mosi_pad; /**< pad to use for MOSI and CLK line */
-    uint8_t gclk_src;       /**< GCLK source which supplys SERCOM */
+    sercom_t sercom;        /**< SERCOM to use */
+    uint8_t gclk_src;       /**< GCLK source which supplies SERCOM */
 #ifdef MODULE_PERIPH_DMA
     uint8_t tx_trigger;     /**< DMA trigger */
     uint8_t rx_trigger;     /**< DMA trigger */
@@ -559,12 +645,12 @@ typedef enum {
  *          if speed > 1 MHz
  */
 typedef struct {
-    SercomI2cm *dev;        /**< pointer to the used I2C device */
     i2c_speed_t speed;      /**< baudrate used for the bus */
     gpio_t scl_pin;         /**< used SCL pin */
     gpio_t sda_pin;         /**< used MOSI pin */
     gpio_mux_t mux;         /**< alternate function (mux) */
-    uint8_t gclk_src;       /**< GCLK source which supplys SERCOM */
+    sercom_t sercom;        /**< The SERCOM to use */
+    uint8_t gclk_src;       /**< GCLK source which suppliess SERCOM */
     uint8_t flags;          /**< allow SERCOM to run in standby mode */
 } i2c_conf_t;
 
@@ -764,66 +850,6 @@ static inline uint8_t sercom_id(const void *sercom)
     assert(false);
 
     return SERCOM_INST_NUM;
-}
-
-/**
- * @brief   Enable peripheral clock for given SERCOM device
- *
- * @param[in] sercom    SERCOM device
- */
-static inline void sercom_clk_en(void *sercom)
-{
-    const uint8_t id = sercom_id(sercom);
-#if defined(CPU_COMMON_SAMD21)
-    PM->APBCMASK.reg |= (PM_APBCMASK_SERCOM0 << id);
-#elif defined (CPU_COMMON_SAMD5X)
-    if (id < 2) {
-        MCLK->APBAMASK.reg |= (1 << (id + 12));
-    } else if (id < 4) {
-        MCLK->APBBMASK.reg |= (1 << (id + 7));
-    } else {
-        MCLK->APBDMASK.reg |= (1 << (id - 4));
-    }
-#else
-    if (id < 5) {
-        MCLK->APBCMASK.reg |= (MCLK_APBCMASK_SERCOM0 << id);
-    }
-#if defined(CPU_COMMON_SAML21)
-    else {
-        MCLK->APBDMASK.reg |= (MCLK_APBDMASK_SERCOM5);
-    }
-#endif /* CPU_COMMON_SAML21 */
-#endif
-}
-
-/**
- * @brief   Disable peripheral clock for given SERCOM device
- *
- * @param[in] sercom    SERCOM device
- */
-static inline void sercom_clk_dis(void *sercom)
-{
-    const uint8_t id = sercom_id(sercom);
-#if defined(CPU_COMMON_SAMD21)
-    PM->APBCMASK.reg &= ~(PM_APBCMASK_SERCOM0 << id);
-#elif defined (CPU_COMMON_SAMD5X)
-    if (id < 2) {
-        MCLK->APBAMASK.reg &= ~(1 << (id + 12));
-    } else if (id < 4) {
-        MCLK->APBBMASK.reg &= ~(1 << (id + 7));
-    } else {
-        MCLK->APBDMASK.reg &= ~(1 << (id - 4));
-    }
-#else
-    if (id < 5) {
-        MCLK->APBCMASK.reg &= ~(MCLK_APBCMASK_SERCOM0 << id);
-    }
-#if defined (CPU_COMMON_SAML21)
-    else {
-        MCLK->APBDMASK.reg &= ~(MCLK_APBDMASK_SERCOM5);
-    }
-#endif /* CPU_COMMON_SAML21 */
-#endif
 }
 
 #ifdef CPU_COMMON_SAMD5X

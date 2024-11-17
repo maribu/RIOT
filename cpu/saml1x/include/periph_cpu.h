@@ -20,7 +20,7 @@
 #ifndef PERIPH_CPU_H
 #define PERIPH_CPU_H
 
-#include "periph_cpu_common.h"
+#include "periph_cpu_common.h" /* IWYU pragma: export */
 
 #ifdef __cplusplus
 extern "C" {

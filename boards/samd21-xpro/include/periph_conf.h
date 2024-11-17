@@ -139,7 +139,7 @@ static const tc32_conf_t timer_config[] = {
  */
 static const uart_conf_t uart_config[] = {
     {    /* Virtual COM Port */
-        .dev      = &SERCOM3->USART,
+        .sercom   = 3,
         .rx_pin   = GPIO_PIN(PA,23),
         .tx_pin   = GPIO_PIN(PA,22),
 #ifdef MODULE_PERIPH_UART_HW_FC
@@ -153,7 +153,7 @@ static const uart_conf_t uart_config[] = {
         .gclk_src = SAM0_GCLK_MAIN,
     },
     {    /* EXT1 */
-        .dev      = &SERCOM4->USART,
+        .sercom   = 4,
         .rx_pin   = GPIO_PIN(PB,9),
         .tx_pin   = GPIO_PIN(PB,8),
 #ifdef MODULE_PERIPH_UART_HW_FC
@@ -167,7 +167,7 @@ static const uart_conf_t uart_config[] = {
         .gclk_src = SAM0_GCLK_MAIN,
     },
     {    /* EXT2/3 */
-        .dev      = &SERCOM4->USART,
+        .sercom   = 4,
         .rx_pin   = GPIO_PIN(PB,11),
         .tx_pin   = GPIO_PIN(PB,10),
 #ifdef MODULE_PERIPH_UART_HW_FC
@@ -181,11 +181,6 @@ static const uart_conf_t uart_config[] = {
         .gclk_src = SAM0_GCLK_MAIN,
     }
 };
-
-/* interrupt function name mapping */
-#define UART_0_ISR          isr_sercom3
-#define UART_1_ISR          isr_sercom4
-#define UART_2_ISR          isr_sercom5
 
 #define UART_NUMOF          ARRAY_SIZE(uart_config)
 /** @} */
@@ -261,7 +256,7 @@ static const pwm_conf_t pwm_config[] = {
  */
 static const spi_conf_t spi_config[] = {
     {   /* EXT1 */
-        .dev      = &SERCOM0->SPI,
+        .sercom   = 0,
         .miso_pin = GPIO_PIN(PA, 4),
         .mosi_pin = GPIO_PIN(PA, 6),
         .clk_pin  = GPIO_PIN(PA, 7),
@@ -277,7 +272,7 @@ static const spi_conf_t spi_config[] = {
 #endif
     },
     {   /* EXT2 */
-        .dev      = &SERCOM1->SPI,
+        .sercom   = 1,
         .miso_pin = GPIO_PIN(PA, 16),
         .mosi_pin = GPIO_PIN(PA, 18),
         .clk_pin  = GPIO_PIN(PA, 19),
@@ -293,7 +288,7 @@ static const spi_conf_t spi_config[] = {
 #endif
     },
     {   /* EXT3 */
-        .dev      = &SERCOM5->SPI,
+        .sercom   = 5,
         .miso_pin = GPIO_PIN(PB, 16),
         .mosi_pin = GPIO_PIN(PB, 22),
         .clk_pin  = GPIO_PIN(PB, 23),
@@ -319,7 +314,7 @@ static const spi_conf_t spi_config[] = {
  */
 static const i2c_conf_t i2c_config[] = {
     {
-        .dev      = &(SERCOM2->I2CM),
+        .sercom   = 2,
         .speed    = I2C_SPEED_NORMAL,
         .scl_pin  = GPIO_PIN(PA, 9),
         .sda_pin  = GPIO_PIN(PA, 8),

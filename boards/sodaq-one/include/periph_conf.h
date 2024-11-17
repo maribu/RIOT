@@ -40,7 +40,7 @@ extern "C" {
  */
 static const uart_conf_t uart_config[] = {
     {
-        .dev      = &SERCOM5->USART,
+        .sercom   = 5,
         .rx_pin   = GPIO_PIN(PB,3),  /* D0, RX Pin */
         .tx_pin   = GPIO_PIN(PB,2),  /* D1, TX Pin */
 #ifdef MODULE_PERIPH_UART_HW_FC
@@ -54,7 +54,7 @@ static const uart_conf_t uart_config[] = {
         .gclk_src = SAM0_GCLK_MAIN,
     },
     {
-        .dev      = &SERCOM2->USART,
+        .sercom   = 2,
         .rx_pin   = GPIO_PIN(PA,13),
         .tx_pin   = GPIO_PIN(PA,12),
 #ifdef MODULE_PERIPH_UART_HW_FC
@@ -68,10 +68,6 @@ static const uart_conf_t uart_config[] = {
         .gclk_src = SAM0_GCLK_MAIN,
     },
 };
-
-/* interrupt function name mapping */
-#define UART_0_ISR          isr_sercom5
-#define UART_1_ISR          isr_sercom2
 
 #define UART_NUMOF          ARRAY_SIZE(uart_config)
 /** @} */
@@ -118,7 +114,7 @@ static const adc_conf_chan_t adc_channels[] = {
  */
 static const spi_conf_t spi_config[] = {
     {
-        .dev      = &SERCOM0->SPI,
+        .sercom   = 0,
         .miso_pin = GPIO_PIN(PA, 8),
         .mosi_pin = GPIO_PIN(PA, 10),
         .clk_pin  = GPIO_PIN(PA, 11),
@@ -144,7 +140,7 @@ static const spi_conf_t spi_config[] = {
  */
 static const i2c_conf_t i2c_config[] = {
     {
-        .dev      = &(SERCOM3->I2CM),
+        .sercom   = 3,
         .speed    = I2C_SPEED_NORMAL,
         .scl_pin  = GPIO_PIN(PA, 23),
         .sda_pin  = GPIO_PIN(PA, 22),

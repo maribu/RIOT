@@ -65,7 +65,7 @@ static const tc32_conf_t timer_config[] = {
  */
 static const uart_conf_t uart_config[] = {
     {    /* Virtual COM Port */
-        .dev = &SERCOM3->USART,
+        .sercom = 3,
         .rx_pin = GPIO_PIN(PA, 18),
         .tx_pin = GPIO_PIN(PA, 19),
 #ifdef MODULE_PERIPH_UART_HW_FC
@@ -79,10 +79,6 @@ static const uart_conf_t uart_config[] = {
         .gclk_src = SAM0_GCLK_MAIN,
     }
 };
-
-/* interrupt function name mapping */
-#define UART_0_ISR          isr_sercom3
-#define UART_NUMOF          ARRAY_SIZE(uart_config)
 /** @} */
 
 /**
@@ -92,32 +88,32 @@ static const uart_conf_t uart_config[] = {
 /* SERCOM5 does not support DMA at the moment. See Datasheet samr34, Figure 4-2 */
 static const spi_conf_t spi_config[] = {
     {
-        .dev = &(SERCOM5->SPI),
-        .miso_pin = GPIO_PIN(PA, 23),
-        .mosi_pin = GPIO_PIN(PB, 02),
-        .clk_pin = GPIO_PIN(PB, 23),
-        .miso_mux = GPIO_MUX_D,
-        .mosi_mux = GPIO_MUX_D,
-        .clk_mux = GPIO_MUX_D,
-        .miso_pad = SPI_PAD_MISO_1,
-        .mosi_pad = SPI_PAD_MOSI_0_SCK_3,
-        .gclk_src = SAM0_GCLK_MAIN,
+        .sercom     = 5,
+        .miso_pin   = GPIO_PIN(PA, 23),
+        .mosi_pin   = GPIO_PIN(PB, 02),
+        .clk_pin    = GPIO_PIN(PB, 23),
+        .miso_mux   = GPIO_MUX_D,
+        .mosi_mux   = GPIO_MUX_D,
+        .clk_mux    = GPIO_MUX_D,
+        .miso_pad   = SPI_PAD_MISO_1,
+        .mosi_pad   = SPI_PAD_MOSI_0_SCK_3,
+        .gclk_src   = SAM0_GCLK_MAIN,
 #ifdef MODULE_PERIPH_DMA
         .tx_trigger = DMA_TRIGGER_DISABLED,
         .rx_trigger = DMA_TRIGGER_DISABLED,
 #endif
     },
     {
-        .dev = &(SERCOM4->SPI),
-        .miso_pin = GPIO_PIN(PC, 19),
-        .mosi_pin = GPIO_PIN(PB, 30),
-        .clk_pin = GPIO_PIN(PC, 18),
-        .miso_mux = GPIO_MUX_F,
-        .mosi_mux = GPIO_MUX_F,
-        .clk_mux = GPIO_MUX_F,
-        .miso_pad = SPI_PAD_MISO_0,
-        .mosi_pad = SPI_PAD_MOSI_2_SCK_3,
-        .gclk_src = SAM0_GCLK_MAIN,
+        .sercom     = 4,
+        .miso_pin   = GPIO_PIN(PC, 19),
+        .mosi_pin   = GPIO_PIN(PB, 30),
+        .clk_pin    = GPIO_PIN(PC, 18),
+        .miso_mux   = GPIO_MUX_F,
+        .mosi_mux   = GPIO_MUX_F,
+        .clk_mux    = GPIO_MUX_F,
+        .miso_pad   = SPI_PAD_MISO_0,
+        .mosi_pad   = SPI_PAD_MOSI_2_SCK_3,
+        .gclk_src   = SAM0_GCLK_MAIN,
 #ifdef MODULE_PERIPH_DMA
         .tx_trigger = SERCOM4_DMAC_ID_TX,
         .rx_trigger = SERCOM4_DMAC_ID_RX,
@@ -134,13 +130,13 @@ static const spi_conf_t spi_config[] = {
  */
 static const i2c_conf_t i2c_config[] = {
     {
-        .dev = &(SERCOM1->I2CM),
-        .speed = I2C_SPEED_NORMAL,
-        .scl_pin = GPIO_PIN(PA, 17),
-        .sda_pin = GPIO_PIN(PA, 16),
-        .mux = GPIO_MUX_C,
+        .sercom   = 1,
+        .speed    = I2C_SPEED_NORMAL,
+        .scl_pin  = GPIO_PIN(PA, 17),
+        .sda_pin  = GPIO_PIN(PA, 16),
+        .mux      = GPIO_MUX_C,
         .gclk_src = SAM0_GCLK_MAIN,
-        .flags = I2C_FLAG_NONE
+        .flags    = I2C_FLAG_NONE
     }
 };
 #define I2C_NUMOF          ARRAY_SIZE(i2c_config)

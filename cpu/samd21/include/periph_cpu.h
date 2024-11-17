@@ -22,7 +22,7 @@
 
 #include <limits.h>
 
-#include "periph_cpu_common.h"
+#include "periph_cpu_common.h" /* IWYU pragma: export */
 
 #ifdef __cplusplus
 extern "C" {
@@ -51,13 +51,9 @@ extern "C" {
 #define SAMD21_PM_IDLE_2        (1U)    /**< Idle 2 (stops AHB, APB and CPU) */
 #define SAMD21_PM_IDLE_1        (2U)    /**< Idle 1 (stops AHB and CPU)      */
 #define SAMD21_PM_IDLE_0        (3U)    /**< Idle 0 (stops CPU)              */
-/** @} */
 
-/**
- * @name   SPI configuration
- * @{
- */
-#define SAM0_SPI_PM_BLOCK        SAMD21_PM_IDLE_1 /**< Stay in Idle 0 mode */
+
+#define SAM0_SERCOM_PM_BLOCK    SAMD21_PM_IDLE_1 /**< Stay in Idle 0 mode */
 /** @} */
 
 /**

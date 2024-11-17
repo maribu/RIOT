@@ -34,7 +34,7 @@ extern "C" {
  */
 static const spi_conf_t spi_config[] = {
     {
-        .dev      = &SERCOM3->SPI,
+        .sercom   = 3,
         .miso_pin = GPIO_PIN(PA, 22),
         .mosi_pin = GPIO_PIN(PA, 20),
         .clk_pin  = GPIO_PIN(PA, 21),

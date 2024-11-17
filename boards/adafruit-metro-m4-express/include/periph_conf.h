@@ -90,7 +90,7 @@ static const adc_conf_chan_t adc_channels[] = {
  */
 static const i2c_conf_t i2c_config[] = {
     {
-        .dev      = &(SERCOM5->I2CM),
+        .sercom   = 5,
         .speed    = I2C_SPEED_NORMAL,
         .scl_pin  = GPIO_PIN(PB, 3),   /* D: SERCOM5.1 */
         .sda_pin  = GPIO_PIN(PB, 2),   /* D: SERCOM5.0 */
@@ -154,7 +154,7 @@ static const tc32_conf_t timer_config[] = {
  */
 static const spi_conf_t spi_config[] = {
     {   /* SPI on ISP */
-        .dev      = &(SERCOM2->SPI),
+        .sercom   = 2,
         .miso_pin = GPIO_PIN(PA, 14), /* C: SERCOM2.2, D: SERCOM4.2 */
         .mosi_pin = GPIO_PIN(PA, 12), /* C: SERCOM2.0, D: SERCOM4.1 */
         .clk_pin  = GPIO_PIN(PA, 13), /* C: SERCOM2.1, D: SERCOM4.0 */
@@ -171,7 +171,7 @@ static const spi_conf_t spi_config[] = {
     },
 #if !MODULE_PERIPH_UART
     {   /* D11=MOSI, D12=MISO, D13=SCK */
-        .dev      = &(SERCOM3->SPI),
+        .sercom   = 3,
         .miso_pin = GPIO_PIN(PA, 17), /* C: SERCOM1.1, D: SERCOM3.0 */
         .mosi_pin = GPIO_PIN(PA, 19), /* C: SERCOM1.3, D: SERCOM3.3 */
         .clk_pin  = GPIO_PIN(PA, 16), /* C: SERCOM1.0, D: SERCOM3.1 */
@@ -189,7 +189,7 @@ static const spi_conf_t spi_config[] = {
 #endif
 #if MODULE_PERIPH_SPI_ON_QSPI
     {    /* QSPI in SPI mode */
-        .dev      = QSPI,
+        .sercom   = SERCOM_ID_QSPI,
         .miso_pin = SAM0_QSPI_PIN_DATA_1,
         .mosi_pin = SAM0_QSPI_PIN_DATA_0,
         .clk_pin  = SAM0_QSPI_PIN_CLK,
@@ -238,7 +238,7 @@ static const uart_conf_t uart_config[] = {
  */
     /* D0 = RXD, D1 = TXD */
     {
-        .dev      = &SERCOM3->USART,
+        .sercom   = 3,
         .rx_pin   = GPIO_PIN(PA, 23),   /* C: SERCOM3.1, D: SERCOM5.0 */
         .tx_pin   = GPIO_PIN(PA, 22),   /* C: SERCOM3.0, D: SERCOM5.1 */
   #ifdef MODULE_PERIPH_UART_HW_FC
@@ -252,10 +252,6 @@ static const uart_conf_t uart_config[] = {
         .gclk_src = SAM0_GCLK_PERIPH,
     },
 };
-
-/* interrupt function name mapping */
-#define UART_0_ISR          isr_sercom3_2
-#define UART_0_ISR_TX       isr_sercom3_0
 
 #define UART_NUMOF          ARRAY_SIZE(uart_config)
 /** @} */

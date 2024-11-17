@@ -23,7 +23,7 @@
 #include <limits.h>
 
 #include "macros/units.h"
-#include "periph_cpu_common.h"
+#include "periph_cpu_common.h" /* IWYU pragma: export */
 
 #include "candev_samd5x.h"
 #ifdef __cplusplus

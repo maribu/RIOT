@@ -122,7 +122,7 @@ static const tc32_conf_t timer_config[] = {
  */
 static const uart_conf_t uart_config[] = {
     {
-        .dev      = &SERCOM4->USART,
+        .sercom   = 4,
         .rx_pin   = GPIO_PIN(PB, 9),    /* D5 */
         .tx_pin   = GPIO_PIN(PB, 8),    /* D4 */
         .mux      = GPIO_MUX_D,
@@ -133,9 +133,6 @@ static const uart_conf_t uart_config[] = {
     }
 };
 
-/* interrupt function name mapping */
-#define UART_0_ISR          isr_sercom4
-
 #define UART_NUMOF          ARRAY_SIZE(uart_config)
 /** @} */
 
@@ -145,7 +142,7 @@ static const uart_conf_t uart_config[] = {
  */
 static const spi_conf_t spi_config[] = {
     {   /* D0 … D2 (user pins) */
-        .dev      = &SERCOM0->SPI,
+        .sercom   = 0,
         .miso_pin = GPIO_PIN(PA, 5),    /* D9 */
         .mosi_pin = GPIO_PIN(PA, 6),    /* D10 */
         .clk_pin  = GPIO_PIN(PA, 7),    /* D8 */
@@ -171,7 +168,7 @@ static const spi_conf_t spi_config[] = {
  */
 static const i2c_conf_t i2c_config[] = {
     {
-        .dev      = &(SERCOM2->I2CM),
+        .sercom   = 2,
         .speed    = I2C_SPEED_NORMAL,
         .scl_pin  = GPIO_PIN(PA, 9),    /* D5 */
         .sda_pin  = GPIO_PIN(PA, 8),    /* D4 */

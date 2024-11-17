@@ -202,7 +202,7 @@ static const pwm_conf_t pwm_config[] = {
  */
 static const spi_conf_t spi_config[] = {
     {
-        .dev      = &SERCOM4->SPI,
+        .sercom   = 4,
         .miso_pin = GPIO_PIN(PC, 19),
         .mosi_pin = GPIO_PIN(PB, 30),
         .clk_pin  = GPIO_PIN(PC, 18),
@@ -228,7 +228,7 @@ static const spi_conf_t spi_config[] = {
  */
 static const i2c_conf_t i2c_config[] = {
     {
-        .dev      = &(SERCOM3->I2CM),
+        .sercom   = 3,
         .speed    = I2C_SPEED_FAST,
         .scl_pin  = GPIO_PIN(PA, 17),
         .sda_pin  = GPIO_PIN(PA, 16),

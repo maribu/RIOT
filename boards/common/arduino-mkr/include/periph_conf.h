@@ -37,7 +37,7 @@ extern "C" {
  */
 static const uart_conf_t uart_config[] = {
     {
-        .dev      = &SERCOM5->USART,
+        .sercom   = 5,
         .rx_pin   = GPIO_PIN(PB,23),  /* ARDUINO_PIN_13, RX Pin */
         .tx_pin   = GPIO_PIN(PB,22),  /* ARDUINO_PIN_14, TX Pin */
 #ifdef MODULE_PERIPH_UART_HW_FC
@@ -52,9 +52,6 @@ static const uart_conf_t uart_config[] = {
     }
 };
 
-/* interrupt function name mapping */
-#define UART_0_ISR          isr_sercom5
-
 #define UART_NUMOF          ARRAY_SIZE(uart_config)
 /** @} */
 
@@ -64,7 +61,7 @@ static const uart_conf_t uart_config[] = {
  */
 static const spi_conf_t spi_config[] = {
     {
-        .dev      = &SERCOM1->SPI,
+        .sercom   = 1,
         .miso_pin = GPIO_PIN(PA, 19),   /* ARDUINO_PIN_8, SERCOM1-MISO */
         .mosi_pin = GPIO_PIN(PA, 16),   /* ARDUINO_PIN_10, SERCOM1-MOSI */
         .clk_pin  = GPIO_PIN(PA, 17),   /* ARDUINO_PIN_9, SERCOM1-SCK */
@@ -80,7 +77,7 @@ static const spi_conf_t spi_config[] = {
 #endif
     },
     {
-        .dev      = &SERCOM2->SPI,
+        .sercom   = 2,
         .miso_pin = GPIO_PIN(PA, 15),
         .mosi_pin = GPIO_PIN(PA, 12),
         .clk_pin  = GPIO_PIN(PA, 13),

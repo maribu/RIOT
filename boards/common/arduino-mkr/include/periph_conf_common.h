@@ -176,7 +176,7 @@ static const adc_conf_chan_t adc_channels[] = {
  */
 static const i2c_conf_t i2c_config[] = {
     {
-        .dev      = &(SERCOM0->I2CM),
+        .sercom   = 0,
         .speed    = I2C_SPEED_NORMAL,
         .scl_pin  = GPIO_PIN(PA, 9),
         .sda_pin  = GPIO_PIN(PA, 8),

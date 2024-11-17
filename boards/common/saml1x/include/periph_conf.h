@@ -80,7 +80,7 @@ static const tc32_conf_t timer_config[] = {
  */
 static const uart_conf_t uart_config[] = {
     {    /* Virtual COM Port */
-        .dev      = &SERCOM2->USART,
+        .sercom   = 2,
         .rx_pin   = GPIO_PIN(PA, 25),
         .tx_pin   = GPIO_PIN(PA, 24),
 #ifdef MODULE_PERIPH_UART_HW_FC
@@ -96,7 +96,7 @@ static const uart_conf_t uart_config[] = {
     {    /* EXT1 */
         /* For SAML11, see boards/saml11/doc.txt
          * to properly enable this SERCOM */
-        .dev      = &SERCOM1->USART,
+        .sercom   = 1,
         .rx_pin   = GPIO_PIN(PA, 9),
         .tx_pin   = GPIO_PIN(PA, 8),
 #ifdef MODULE_PERIPH_UART_HW_FC
@@ -110,12 +110,6 @@ static const uart_conf_t uart_config[] = {
         .gclk_src = SAM0_GCLK_MAIN,
     }
 };
-
-/* interrupt function name mapping */
-#define UART_0_ISR          isr_sercom2_2
-#define UART_0_ISR_TX       isr_sercom2_0
-#define UART_1_ISR          isr_sercom1_2
-#define UART_1_ISR_TX       isr_sercom1_0
 
 #define UART_NUMOF          ARRAY_SIZE(uart_config)
 /** @} */
@@ -172,7 +166,7 @@ static const pwm_conf_t pwm_config[] = {
  */
 static const spi_conf_t spi_config[] = {
     {
-        .dev      = &(SERCOM0->SPI),
+        .sercom   = 0,
         .miso_pin = GPIO_PIN(PA,  4),
         .mosi_pin = GPIO_PIN(PA, 14),
         .clk_pin  = GPIO_PIN(PA, 15),
@@ -198,7 +192,7 @@ static const spi_conf_t spi_config[] = {
  */
 static const i2c_conf_t i2c_config[] = {
     {
-        .dev      = &(SERCOM1->I2CM),
+        .sercom   = 1,
         .speed    = I2C_SPEED_NORMAL,
         .scl_pin  = GPIO_PIN(PA, 17),
         .sda_pin  = GPIO_PIN(PA, 16),

@@ -90,7 +90,7 @@ static const tc32_conf_t timer_config[] = {
  */
 static const uart_conf_t uart_config[] = {
     {
-        .dev      = &SERCOM3->USART,
+        .sercom   = 3,
         .rx_pin   = GPIO_PIN(PA, 16),
         .tx_pin   = GPIO_PIN(PA, 17),
 #ifdef MODULE_PERIPH_UART_HW_FC
@@ -104,10 +104,6 @@ static const uart_conf_t uart_config[] = {
         .gclk_src = SAM0_GCLK_PERIPH,
     },
 };
-
-/* interrupt function name mapping */
-#define UART_0_ISR          isr_sercom3_2
-#define UART_0_ISR_TX       isr_sercom3_0
 
 #define UART_NUMOF          ARRAY_SIZE(uart_config)
 /** @} */
@@ -147,7 +143,7 @@ static const pwm_conf_t pwm_config[] = {
  */
 static const spi_conf_t spi_config[] = {
     {
-        .dev      = &(SERCOM1->SPI),
+        .sercom   = 1,
         .miso_pin = GPIO_PIN(PB, 23),
         .mosi_pin = GPIO_PIN(PA, 0),
         .clk_pin  = GPIO_PIN(PA, 1),
@@ -164,7 +160,7 @@ static const spi_conf_t spi_config[] = {
     },
 #ifdef MODULE_PERIPH_SPI_ON_QSPI
     {    /* QSPI in SPI mode */
-        .dev      = QSPI,
+        .sercom   = SERCOM_ID_QSPI,
         .miso_pin = SAM0_QSPI_PIN_DATA_1,
         .mosi_pin = SAM0_QSPI_PIN_DATA_0,
         .clk_pin  = SAM0_QSPI_PIN_CLK,
@@ -191,7 +187,7 @@ static const spi_conf_t spi_config[] = {
  */
 static const i2c_conf_t i2c_config[] = {
     {
-        .dev      = &(SERCOM2->I2CM),
+        .sercom   = 2,
         .speed    = I2C_SPEED_NORMAL,
         .scl_pin  = GPIO_PIN(PA, 12),
         .sda_pin  = GPIO_PIN(PA, 13),
