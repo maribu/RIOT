@@ -169,7 +169,6 @@ static const spi_conf_t spi_config[] = {
         .rx_trigger = SERCOM2_DMAC_ID_RX,
 #endif
     },
-#if !MODULE_PERIPH_UART
     {   /* D11=MOSI, D12=MISO, D13=SCK */
         .sercom   = 3,
         .miso_pin = GPIO_PIN(PA, 17), /* C: SERCOM1.1, D: SERCOM3.0 */
@@ -186,7 +185,6 @@ static const spi_conf_t spi_config[] = {
         .rx_trigger = SERCOM3_DMAC_ID_RX,
 #  endif
     },
-#endif
 #if MODULE_PERIPH_SPI_ON_QSPI
     {    /* QSPI in SPI mode */
         .sercom   = SERCOM_ID_QSPI,

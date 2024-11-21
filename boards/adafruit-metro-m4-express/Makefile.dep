@@ -13,5 +13,11 @@ ifneq (,$(filter mtd,$(USEMODULE)))
   USEMODULE += mtd_spi_nor
 endif
 
+ifneq (,$(filter periph_spi,$(FEATURES_USED)))
+  ifneq (,$(filter periph_uart,$(FEATURES_USED)))
+    $(warning "SPI on D11/D12/D13 and UART on D0/D1 use both SERCOM 3. Most users of the UART API never call uart_poweroff to release the peripheral and SPI access will block indefinitely.")
+  endif
+endif
+
 # setup the samd21 arduino bootloader related dependencies
 include $(RIOTBOARD)/common/samdx1-arduino-bootloader/Makefile.dep
