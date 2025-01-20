@@ -261,7 +261,21 @@ int nanocoap_server_prepare_separate(nanocoap_server_response_ctx_t *ctx,
                                      coap_pkt_t *pkt, const coap_request_ctx_t *req);
 
 /**
- * @brief   Send a separate response to a CoAP request
+ * @brief   Check if the given packet is a duplicate of the one the
+ *          separate response content contains was prepared for
+ *
+ * @param[in]   ctx     Context to check against
+ * @param[in]   pkt     Possible duplication
+ * @param[in]   req     Request context of the possible duplicate
+ *
+ * @retval  true        @p pkt is a duplicate
+ * @retval  false       @p pkt is *NOT* a duplicate
+ */
+bool nanocoap_is_duplicate_in_separate_ctx(const nanocoap_server_response_ctx_t *ctx,
+                                           coap_pkt_t *pkt, const coap_request_ctx_t *req);
+
+/**
+ * @brief   Build and send a separate response to a CoAP request
  *
  *  This sends a response to a CoAP request outside the CoAP handler
  *
@@ -279,12 +293,64 @@ int nanocoap_server_prepare_separate(nanocoap_server_response_ctx_t *ctx,
  * @param[in]   payload Response payload
  * @param[in]   len     Payload length
  *
- * @returns     0 on success
- *              negative error (see @ref sock_udp_sendv_aux)
+ * @retval      0               Success
+ * @retval      -ECANCELED      Request contained no-response option that did match the given @p code
+ * @retval      <0              Negative errno code indicating the error
  */
 int nanocoap_server_send_separate(const nanocoap_server_response_ctx_t *ctx,
                                   unsigned code, unsigned type,
                                   const void *payload, size_t len);
+
+/**
+ * @brief   Build send separate response header to a CoAP request
+ *
+ * This builds the response packet header. You may add CoAP Options, a payload
+ * marker and a payload as needed after the header.
+ *
+ * @pre     @ref nanocoap_server_prepare_separate has been called on @p ctx
+ *          inside the CoAP handler
+ * @pre     Synchronization between calls of this function and calls of
+ *          @ref nanocoap_server_prepare_separate is ensured
+ *
+ * @warning This function is only available when using the module
+ *          `nanocoap_server_separate`
+ *
+ * @param[in]   ctx     Context information for the CoAP response
+ * @param[out]  buf     Buffer to write the header to
+ * @param[in]   buf_len Length of @p buf in bytes
+ * @param[in]   code    CoAP response code
+ * @param[in]   type    Response type, may be `COAP_TYPE_NON`
+ *
+ * @return      Length of the header build in bytes
+ * @retval      -ECANCELED      Request contained no-response option that did match the given @p code
+ * @retval      <0              Negative errno code indicating the error
+ */
+ssize_t nanocoap_server_build_separate(const nanocoap_server_response_ctx_t *ctx,
+                                       uint8_t *buf, size_t buf_len,
+                                       unsigned code, unsigned type);
+
+/**
+ * @brief   Send an already build separate response
+ *
+ * @pre     @ref nanocoap_server_prepare_separate has been called on @p ctx
+ *          inside the CoAP handler
+ * @pre     Synchronization between calls of this function and calls of
+ *          @ref nanocoap_server_prepare_separate is ensured
+ * @pre     @ref nanocoap_server_build_separate has been used to build the
+ *          header in @p msg
+ *
+ * @warning This function is only available when using the module
+ *          `nanocoap_server_separate`
+ *
+ * @param[in]   ctx     Context information for the CoAP response
+ * @param[in]   reply   I/O list containing the reply to send
+ *
+ * @retval      0   Success
+ * @retval      <0  negative errno code indicating the error
+ */
+int nanocoap_server_sendv_separate(const nanocoap_server_response_ctx_t *ctx,
+                                   const iolist_t *reply);
+
 /**
  * @brief   Get next consecutive message ID for use when building a new
  *          CoAP request.
