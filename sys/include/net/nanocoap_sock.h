@@ -352,6 +352,64 @@ int nanocoap_server_sendv_separate(const nanocoap_server_response_ctx_t *ctx,
                                    const iolist_t *reply);
 
 /**
+ * @brief           Register an observer
+ * @param[in]       req_ctx         Request context belonging to @p req_pkt
+ * @param[in,out]   req_pkt         Request that contained the observe registration request
+ *
+ * @warning This depends on module `nanocoap_server_observe`
+ *
+ * @rerval  0           Success
+ * @retval  -ENOMEM     Not enough resources to register another observer
+ * @retval  <0          Negative errno code indicating error
+ */
+int nanocoap_register_observer(const coap_request_ctx_t *req_ctx, coap_pkt_t *req_pkt);
+
+/**
+ * @brief   Unregister an observer
+ * @param   req_ctx         Request context belonging to @p req_pkt
+ *
+ * @warning This depends on module `nanocoap_server_observe`
+ *
+ * @details It is safe to call this multiple times, e.g. on a GET request
+ *          without an observe option just in case it may be an eager
+ *          unregistration
+ */
+void nanocoap_unregister_observer(const coap_request_ctx_t *req_ctx);
+
+/**
+ * @brief   Unregister an observer given by its UDP endpoint
+ * @param[in]   ep      Endpoint to wipe from the observer list
+ */
+void nanocoap_unregister_observer_by_udp_ep(const sock_udp_ep_t *ep);
+
+/**
+ * @brief   Notify all currently registered observers of the given resource
+ *
+ * @param[in]   res     Resource to send updates for
+ * @param[in]   iol     I/O list containing the CoAP Options, payload marker,
+ *                      and payload of the update to send up
+ *
+ * @pre     @p iol contains everything but the CoAP header needed to send out.
+ *          This will at least be a CoAP observe option, a payload marker,
+ *          and a payload
+ *
+ * @post    For each registered observer a CoAP packet header is generated and
+ *          the concatenation of that header and the provided list is send
+ */
+void nanocoap_notify_observers(const coap_resource_t *res, const iolist_t *iol);
+
+/**
+ * @brief   Wrapper for @ref nanocoap_notify_observers that is easier to use
+ *
+ * @param[in]   res         Resource to send updates for
+ * @param[in]   obs         24-bit number to add as observe option
+ * @param[in]   payload     Payload to send out
+ * @param[in]   payload_len Length of @p payload in bytes
+ */
+void nanocoap_notify_observers_simple(const coap_resource_t *res, uint32_t obs,
+                                      const void *payload, size_t payload_len);
+
+/**
  * @brief   Get next consecutive message ID for use when building a new
  *          CoAP request.
  *
