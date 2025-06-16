@@ -1,0 +1,6 @@
+FEATURES_REQUIRED += periph_i2c
+FEATURES_REQUIRED += periph_gpio
+FEATURES_REQUIRED += periph_gpio_irq
+
+USEMODULE += tiny_strerror
+USEMODULE += rtc_utils

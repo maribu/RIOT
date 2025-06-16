@@ -1,0 +1,5 @@
+USEMODULE_INCLUDES_rv_3028_c7 := $(LAST_MAKEFILEDIR)/include
+USEMODULE_INCLUDES += $(USEMODULE_INCLUDES_rv_3028_c7)
+
+# Optionally enable alarm support
+PSEUDOMODULES += rv_3028_c7_alarm

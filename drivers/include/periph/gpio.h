@@ -77,7 +77,7 @@
 #include <limits.h>
 #include <stdbool.h>
 
-#include "periph_cpu.h"
+#include "periph_cpu.h" /* IWYU pragma: export */
 #include "periph_conf.h"
 
 #ifdef __cplusplus
