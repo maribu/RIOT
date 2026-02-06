@@ -1557,8 +1557,13 @@ static void _shrink_window(gnrc_sixlowpan_frag_fb_t *fbuf)
         fbuf->sfr.frags_sent = 0;   /* temporarily reset fragments sent to count them again*/
         /* move all fragments within congestion window into new, temporary list */
         while (gnrc_sixlowpan_frag_sfr_congure_snd_in_cwnd(fbuf)) {
-            clist_rpush(&new_window, clist_lpop(&fbuf->sfr.window));
+            clist_node_t *tmp = clist_lpop(&fbuf->sfr.window);
             fbuf->sfr.frags_sent++;
+            /* invariant: gnrc_sixlowpan_frag_sfr_congure_snd_in_cwnd() said
+             * fbuf is in congestion window, so fbuf->sfr.window cannot have
+             * been empty. */
+            assume(tmp != NULL);
+            clist_rpush(&new_window, tmp);
         }
         /* free all remaining fragments from old congestion window that did not fit into
          * the shrunk window */
@@ -1779,6 +1784,7 @@ static void _handle_rfrag(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
 static void _handle_ack(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
                         unsigned page)
 {
+    assume(netif_hdr != NULL);
     gnrc_sixlowpan_frag_vrb_t *vrbe;
     sixlowpan_sfr_ack_t *hdr = pkt->data;
     uint32_t recv_time = xtimer_now_usec();

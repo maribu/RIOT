@@ -221,6 +221,9 @@ static void _receive(gnrc_pktsnip_t *pkt)
         }
 
         pkt = gnrc_pktbuf_remove_snip(pkt, sixlowpan);
+        /* gnrc_pktbuf_mark() added a new snip to the list and the list was not
+         * empty before, so removing one snip from the list cannot return NULL */
+        assume(pkt != NULL);
 #if defined(MODULE_CCN_LITE)
         payload->type = GNRC_NETTYPE_CCN;
 #elif defined(MODULE_GNRC_IPV6)
