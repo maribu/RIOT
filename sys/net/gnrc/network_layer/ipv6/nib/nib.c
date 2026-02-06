@@ -204,7 +204,7 @@ void gnrc_ipv6_nib_stop_search_rtr(gnrc_netif_t *netif)
 
 void gnrc_ipv6_nib_iface_up(gnrc_netif_t *netif)
 {
-    assert(netif != NULL);
+    assume(netif != NULL);
     gnrc_netif_acquire(netif);
 
     _init_iface_arsm(netif);
@@ -236,7 +236,7 @@ void gnrc_ipv6_nib_iface_up(gnrc_netif_t *netif)
 
 void gnrc_ipv6_nib_iface_down(gnrc_netif_t *netif, bool send_final_ra)
 {
-    assert(netif != NULL);
+    assume(netif != NULL);
     DEBUG("nib: Deinitialize interface %u\n", netif->pid);
     gnrc_netif_acquire(netif);
 
@@ -272,7 +272,7 @@ void gnrc_ipv6_nib_iface_down(gnrc_netif_t *netif, bool send_final_ra)
 
 void gnrc_ipv6_nib_init_iface(gnrc_netif_t *netif)
 {
-    assert(netif != NULL);
+    assume(netif != NULL);
     DEBUG("nib: Initialize interface %u\n", netif->pid);
     gnrc_netif_acquire(netif);
 
@@ -438,7 +438,7 @@ void gnrc_ipv6_nib_handle_pkt(gnrc_netif_t *netif, const ipv6_hdr_t *ipv6,
                               const icmpv6_hdr_t *icmpv6, size_t icmpv6_len)
 {
     DEBUG("nib: Handle packet (icmpv6->type = %u)\n", icmpv6->type);
-    assert(netif != NULL);
+    assume(netif != NULL);
     gnrc_netif_acquire(netif);
     _nib_acquire();
     switch (icmpv6->type) {
@@ -602,7 +602,7 @@ static void _handle_rtr_sol(gnrc_netif_t *netif, const ipv6_hdr_t *ipv6,
     _nib_onl_entry_t *nce = NULL;
     ndp_opt_t *opt;
 
-    assert(netif != NULL);
+    assume(netif != NULL);
     /* check validity, see: https://tools.ietf.org/html/rfc4861#section-6.1.1 */
     /* checksum is checked by GNRC's ICMPv6 module */
     if (!(gnrc_netif_is_rtr(netif)) || (ipv6->hl != NDP_HOP_LIMIT) ||
@@ -715,7 +715,7 @@ static void _handle_rtr_adv(gnrc_netif_t *netif, const ipv6_hdr_t *ipv6,
     _nib_abr_entry_t *abr = NULL;
     uint32_t next_timeout = UINT32_MAX;
 
-    assert(netif != NULL);
+    assume(netif != NULL);
     /* check validity, see: https://tools.ietf.org/html/rfc4861#section-6.1.1 */
     /* checksum is checked by GNRC's ICMPv6 module */
     if (!(ipv6_addr_is_link_local(&ipv6->src)) ||
@@ -1362,7 +1362,7 @@ static gnrc_pktqueue_t *_alloc_queue_entry(gnrc_pktsnip_t *pkt)
     _nib_onl_entry_t *nbr = _iter_nc_nbr(NULL);
     _nib_onl_entry_t *hog = nbr;
     /* There MUST be at least a neighbor in the NC */
-    assert(hog);
+    assume(hog);
     while ((nbr = _iter_nc_nbr(nbr))) {
         if (ARRAY_SIZE(_queue_pool) >= CONFIG_GNRC_IPV6_NIB_NBR_QUEUE_CAP &&
             /* The per-neighbor queue is capped at CONFIG_GNRC_IPV6_NIB_NBR_QUEUE_CAP.
@@ -1370,7 +1370,7 @@ static gnrc_pktqueue_t *_alloc_queue_entry(gnrc_pktsnip_t *pkt)
             hog->pktqueue_len == CONFIG_GNRC_IPV6_NIB_NBR_QUEUE_CAP) {
             break;
         }
-        assert(hog->pktqueue_len < CONFIG_GNRC_IPV6_NIB_NBR_QUEUE_CAP);
+        assume(hog->pktqueue_len < CONFIG_GNRC_IPV6_NIB_NBR_QUEUE_CAP);
 
         if (nbr->pktqueue_len > hog->pktqueue_len) {
             hog = nbr;
@@ -1383,7 +1383,7 @@ static gnrc_pktqueue_t *_alloc_queue_entry(gnrc_pktsnip_t *pkt)
 
     /* We have one more pktqueue entries than neighbors in the NC, therefore
      * there must be a neighbor with two or more packets in its queue */
-    assert(hog->pktqueue_len >= 2);
+    assume(hog->pktqueue_len >= 2);
 
     gnrc_pktqueue_t *qentry = _nbr_pop_pkt(hog);
     gnrc_pktbuf_release(qentry->pkt);
@@ -1841,10 +1841,10 @@ static uint32_t _handle_rio(gnrc_netif_t *netif, const ipv6_hdr_t *ipv6,
 gnrc_pktqueue_t *_nbr_pop_pkt(_nib_onl_entry_t *node)
 {
     if (node->pktqueue_len == 0) {
-        assert(node->pktqueue == NULL);
+        assume(node->pktqueue == NULL);
         return NULL;
     }
-    assert(node->pktqueue != NULL);
+    assume(node->pktqueue != NULL);
 
     node->pktqueue_len--;
 
@@ -1855,7 +1855,7 @@ void _nbr_push_pkt(_nib_onl_entry_t *node, gnrc_pktqueue_t *pkt)
 {
     static_assert(CONFIG_GNRC_IPV6_NIB_NBR_QUEUE_CAP <= UINT8_MAX,
                   "nib: nbr queue cap overflows counter");
-    assert(_get_nud_state(node) == GNRC_IPV6_NIB_NC_INFO_NUD_STATE_INCOMPLETE);
+    assume(_get_nud_state(node) == GNRC_IPV6_NIB_NC_INFO_NUD_STATE_INCOMPLETE);
     /* We're capping the per-neighbor queue length out of following reasons:
      *  - https://www.rfc-editor.org/rfc/rfc4861#section-7.2.2 recommends a
      *    small queue size

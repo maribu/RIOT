@@ -106,9 +106,9 @@ static inline uint32_t _exp_backoff_retrans_timer_factor(uint8_t ns_sent,
                                                          uint32_t retrans_timer,
                                                          uint32_t factor)
 {
-    assert(NDP_MIN_RANDOM_FACTOR <= factor);
-    assert(factor < NDP_MAX_RANDOM_FACTOR);
-    assert(ns_sent <= NDP_MAX_NS_NUMOF);
+    assume(NDP_MIN_RANDOM_FACTOR <= factor);
+    assume(factor < NDP_MAX_RANDOM_FACTOR);
+    assume(ns_sent <= NDP_MAX_NS_NUMOF);
     /* backoff according to  https://tools.ietf.org/html/rfc7048 with
      * BACKOFF_MULTIPLE == 2 */
     uint32_t res = (uint32_t)(((uint64_t)(((uint32_t) 1) << ns_sent) *
