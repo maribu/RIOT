@@ -187,7 +187,7 @@ extern "C" {
  *
  * @param[in] cond  Condition that is guaranteed to be true
  */
-#define assume(cond) ((cond) ? (void)0 : assert(0), UNREACHABLE())
+#define assume(cond) ((cond) ? (void)0 : (assert(0), UNREACHABLE()))
 
 /**
  * @brief   Wrapper function to silence "comparison is always false due to limited
