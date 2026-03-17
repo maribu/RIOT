@@ -39,10 +39,13 @@ extern "C" {
  * @param[in] url       url pointer containing the full coap url to the manifest
  * @param[in] len       length of the url
  *
- * @retval true if the worker was triggered
- * @retval false if the worker is already busy
+ * @retval  0           if the worker was triggered
+ * @retval  -EINVAL     if @p url and/or @p len was invalid
+ * @retval  -EOVERFLOW  if the URL was larger than the temporary buffer used to
+ *                      old it
+ * @retval  -EAGAIN     if the worker is already busy
  */
-bool suit_worker_trigger(const char *url, size_t len);
+int suit_worker_trigger(const char *url, size_t len);
 
 /**
  * @brief   Trigger a SUIT update via a worker thread

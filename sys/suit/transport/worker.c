@@ -207,17 +207,26 @@ static bool _worker_reap(void)
     return true;
 }
 
-bool suit_worker_trigger(const char *url, size_t len)
+int suit_worker_trigger(const char *url, size_t len)
 {
     if (!mutex_trylock(&_worker_lock)) {
-        return false;
-    }
-    if (!_worker_reap()) {
-        return false;
+        return -EAGAIN;
     }
 
-    assert(len != 0); /* A zero-length URI is invalid, but _url[0] == '\0' is
-                         special to _suit_worker_thread */
+    if (!_worker_reap()) {
+        return -EAGAIN;
+    }
+
+    /* A zero-length URI is invalid, but _url[0] == '\0' is special to
+     * _suit_worker_thread */
+    if (!len) {
+        return -EINVAL;
+    }
+
+    if (len + 1 >= sizeof(_url)) {
+        return -EOVERFLOW;
+    }
+
     memcpy(_url, url, len);
     _url[len] = '\0';
 
