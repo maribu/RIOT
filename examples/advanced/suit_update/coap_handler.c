@@ -31,6 +31,23 @@ static ssize_t _version_handler(coap_pkt_t *pkt, uint8_t *buf, size_t len,
                              COAP_FORMAT_TEXT, (uint8_t *)"NONE", 4);
 }
 
+static size_t _trim_end(const char *uri, size_t uri_len)
+{
+    while (uri_len > 0) {
+        switch (uri[uri_len - 1]) {
+        case '\0':
+        case '\r':
+        case '\n':
+            uri_len--;
+            break;
+        default:
+            return uri_len;
+        }
+    }
+
+    return uri_len;
+}
+
 static ssize_t _trigger_handler(coap_pkt_t *pkt, uint8_t *buf, size_t len,
                                 coap_request_ctx_t *context)
 {
@@ -38,13 +55,25 @@ static ssize_t _trigger_handler(coap_pkt_t *pkt, uint8_t *buf, size_t len,
     unsigned code;
     size_t payload_len = pkt->payload_len;
     if (payload_len) {
-        if (payload_len >= CONFIG_SOCK_URLPATH_MAXLEN) {
-            code = COAP_CODE_REQUEST_ENTITY_TOO_LARGE;
-        }
-        else {
+        const char *uri = (char *)pkt->payload;
+        size_t uri_len = _trim_end(uri, pkt->payload_len);
+        switch (suit_worker_trigger(uri, uri_len)) {
+        case 0:
             code = COAP_CODE_CREATED;
-            LOG_INFO("suit: received URL: \"%s\"\n", (char *)pkt->payload);
-            suit_worker_trigger((char *)pkt->payload, strlen((char *)pkt->payload));
+            LOG_INFO("suit: received URL: \"%.*s\"\n", (int)uri_len, uri);
+            break;
+        case -EOVERFLOW:
+            code = COAP_CODE_REQUEST_ENTITY_TOO_LARGE;
+            break;
+        case -EINVAL:
+            code = COAP_CODE_BAD_REQUEST;
+            break;
+        case -EAGAIN:
+            code = COAP_CODE_TOO_MANY_REQUESTS;
+            break;
+        default:
+            code = COAP_CODE_INTERNAL_SERVER_ERROR;
+            break;
         }
     }
     else {

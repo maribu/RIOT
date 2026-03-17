@@ -35,15 +35,15 @@ $ BOARD=native make -C examples/advanced/suit_update all term
 ```
    and add an address from the same range to the interface in RIOT
 ```console
-> ifconfig 5 add 2001:db8::2/64
+> ifconfig 6 add 2001:db8::2/64
 ```
 
 4. Generate a payload and a signed manifest for the payload:
 ```console
 $ echo "AABBCCDD" > coaproot/payload.bin
-$ dist/tools/suit/gen_manifest.py --urlroot coap://[2001:db8::1]/ --seqnr 1 -o suit.tmp coaproot/payload.bin:0:ram:0
+$ dist/tools/suit/gen_manifest.py --urlroot 'coap://[2001:db8::1]/' --seqnr 1 -o suit.tmp coaproot/payload.bin:0:ram:0
 $ dist/tools/suit/suit-manifest-generator/bin/suit-tool create -f suit -i suit.tmp -o coaproot/suit_manifest
-$ dist/tools/suit/suit-manifest-generator/bin/suit-tool sign -k keys/default.pem -m coaproot/suit_manifest -o coaproot/suit_manifest.signed
+$ dist/tools/suit/suit-manifest-generator/bin/suit-tool sign -k examples/advanced/suit_update/bin/native64/default.pem -m coaproot/suit_manifest -o coaproot/suit_manifest.signed
 ```
 
 5. Pull the manifest from the native instance:
@@ -98,7 +98,7 @@ First a bridge with two tap devices is created:
 echo "AABBCCDD" > coaproot/payload.bin
 dist/tools/suit/gen_manifest.py --urlroot coap://[2001:db8::1]/ --seqnr 1 -o suit.tmp coaproot/payload.bin:0:ram:0
 dist/tools/suit/suit-manifest-generator/bin/suit-tool create -f suit -i suit.tmp -o coaproot/suit_manifest
-dist/tools/suit/suit-manifest-generator/bin/suit-tool sign -k keys/default.pem -m coaproot/suit_manifest -o coaproot/suit_manifest.signed
+dist/tools/suit/suit-manifest-generator/bin/suit-tool sign -k examples/advanced/suit_update/bin/native64/default.pem -m coaproot/suit_manifest -o coaproot/suit_manifest.signed
 ```console
 $ sudo dist/tools/tapsetup/tapsetup -c
 ```
@@ -152,10 +152,10 @@ configured on the `tapbr0` interface on the host. In the RIOT shell, this can be
 done with:
 
 ```console
-> ifconfig 5 add 2001:db8::2/64
+> ifconfig 6 add 2001:db8::2/64
 ```
 
-Where 5 is the interface number of the interface shown with the `ifconfig`
+Where 6 is the interface number of the interface shown with the `ifconfig`
 command.
 
 
