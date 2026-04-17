@@ -286,7 +286,7 @@ ssize_t clif_get_target_const(const char *input, size_t input_len, const char **
  *                          beginning of it
  *
  * @return length of the target if found
- * @return CLIF_NOT_FOUND if no valid target is found
+ * @reval CLIF_NOT_FOUND if no valid target is found
  */
 static inline ssize_t clif_get_target(char *input, size_t input_len, char **output)
 {
