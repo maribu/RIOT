@@ -272,7 +272,27 @@ ssize_t clif_add_link_separator(char *buf, size_t maxlen);
  * @return length of the target if found
  * @return CLIF_NOT_FOUND if no valid target is found
  */
-ssize_t clif_get_target(const char *input, size_t input_len, char **output);
+ssize_t clif_get_target_const(const char *input, size_t input_len, const char **output);
+
+/**
+ * @brief   Same as @ref clif_get_target_const but with non-`const` memory
+ *
+ * @pre `input != NULL`
+ *
+ * @param[in]  input        string where to look for the target. It should only
+ *                          be ONE link. Must not be NULL.
+ * @param[in]  input_len    length of @p input.
+ * @param[out] output       if a target is found this will point to the
+ *                          beginning of it
+ *
+ * @return length of the target if found
+ * @return CLIF_NOT_FOUND if no valid target is found
+ */
+static inline ssize_t clif_get_target(char *input, size_t input_len, char **output)
+{
+    return clif_get_target_const(input, input_len, (const char **)output);
+}
+
 /**
  * @brief   Looks for the first attribute in a given link.
  *

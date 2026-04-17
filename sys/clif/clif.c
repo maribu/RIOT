@@ -74,7 +74,7 @@ ssize_t clif_decode_link(clif_t *link, clif_attr_t *attrs, unsigned attrs_len,
     const char *end = buf + maxlen;
     clif_attr_t _dummy_attr;
 
-    ssize_t size = clif_get_target(buf, maxlen, &pos);
+    ssize_t size = clif_get_target((char *)buf, maxlen, &pos);
     if (size < 0) {
         return CLIF_NOT_FOUND;
     }
@@ -229,15 +229,12 @@ ssize_t clif_add_attr(clif_attr_t *attr, char *buf, size_t maxlen)
     return pos;
 }
 
-ssize_t clif_get_target(const char *input, size_t input_len, char **output)
+ssize_t clif_get_target_const(const char *input, size_t input_len, const char **output)
 {
     assert(input);
-    char *target_end;
+    const char *target_end;
 
-    /* on recent glibc (as shipped Ubuntu 26.04) memchr() returns const void *
-     * instead of void *, so we have to cast to intentionally ignore the const
-     * qualifier here */
-    *output = (char *)memchr(input, LF_PATH_BEGIN_C, input_len);
+    *output = memchr(input, LF_PATH_BEGIN_C, input_len);
     if (!*output) {
         DEBUG("Path start not found\n");
         return CLIF_NOT_FOUND;
