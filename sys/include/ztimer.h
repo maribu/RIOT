@@ -300,6 +300,9 @@ typedef void (*ztimer_callback_t)(void *arg);
 struct ztimer_base {
     ztimer_base_t *next;        /**< next timer in list */
     uint32_t offset;            /**< offset from last timer in list */
+#if MODULE_ZTIMER_DEBUG
+    uint32_t dbg_abs_target;    /**< absolute target value; for debug only */
+#endif
 };
 
 /**

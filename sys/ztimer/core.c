@@ -156,6 +156,26 @@ bool ztimer_remove(ztimer_clock_t *clock, ztimer_t *timer)
     return was_removed;
 }
 
+static void _dbg_selftest(ztimer_clock_t *clock, uint32_t now)
+{
+    (void)clock;
+    (void)now;
+#if MODULE_ZTIMER_DEBUG
+    ztimer_base_t *entry = clock->list.next;
+
+    while (entry) {
+        now += entry->offset;
+        if ((entry->dbg_abs_target - 1 - now) < UINT32_MAX / 4) {
+            LOG_ERROR("[ztimer] %p on clock %p originally due at %" PRIu32
+                      " now due at %" PRIu32 "!\n",
+                      (void *)entry, (void *)clock, entry->dbg_abs_target, now);
+        }
+
+        entry = entry->next;
+    }
+#endif
+}
+
 uint32_t ztimer_set(ztimer_clock_t *clock, ztimer_t *timer, uint32_t val)
 {
     unsigned state = irq_disable();
@@ -191,6 +211,10 @@ uint32_t ztimer_set(ztimer_clock_t *clock, ztimer_t *timer, uint32_t val)
         val = 0;
     }
 
+#if MODULE_ZTIMER_DEBUG
+    timer->base.dbg_abs_target = now + val;
+#endif
+
     timer->base.offset = val;
     _add_entry_to_list(clock, &timer->base);
     _ztimer_update(clock);
@@ -209,6 +233,8 @@ uint32_t ztimer_set(ztimer_clock_t *clock, ztimer_t *timer, uint32_t val)
 #else
     (void)was_set;
 #endif
+
+    _dbg_selftest(clock, now);
 
     return now;
 }
@@ -425,16 +451,20 @@ void ztimer_handler(ztimer_clock_t *clock)
 {
     bool no_clock_user_left = false;
 
-    DEBUG("ztimer_handler(): %p now=%" PRIu32 "\n", (void *)clock, clock->ops->now(
-              clock));
+#if MODULE_ZTIMER_EXTEND || MODULE_ZTIMER_DEBUG || ENABLE_DEBUG
+    /* For ztimer_extend: calling now triggers checkpointing
+     * For debug: we are interested in the value :) */
+    uint32_t now = ztimer_now(clock);
+    _dbg_selftest(clock, now);
+#endif
+
+    DEBUG("ztimer_handler(): %p now=%" PRIu32 "\n", (void *)clock, now);
     if (IS_ACTIVE(ENABLE_DEBUG)) {
         _ztimer_print(clock);
     }
 
 #if MODULE_ZTIMER_EXTEND
     if (clock->max_value < UINT32_MAX) {
-        /* calling now triggers checkpointing */
-        uint32_t now = ztimer_now(clock);
 
         if (clock->list.next) {
             uint32_t target = clock->list.offset + clock->list.next->offset;
@@ -445,10 +475,9 @@ void ztimer_handler(ztimer_clock_t *clock)
                 clock->ops->set(clock, _min_u32(diff, clock->max_value >> 1));
                 return;
             }
-            else {
-                DEBUG("ztimer_handler(): %p diff=%" PRIi32 "\n", (void *)clock,
-                      diff);
-            }
+
+            DEBUG("ztimer_handler(): %p diff=%" PRIi32 "\n", (void *)clock,
+                  diff);
         }
         else {
             DEBUG("ztimer_handler(): %p intermediate\n", (void *)clock);
