@@ -92,27 +92,27 @@ extern "C" {
  * @brief The maximum number of threads to be scheduled
  */
 #ifndef MAXTHREADS
-#if defined(MODULE_CORE_THREAD)
-#define MAXTHREADS 32
-#else
-#define MAXTHREADS 0
-#endif
+#  if defined(MODULE_CORE_THREAD)
+#    define MAXTHREADS 32
+#  else
+#    define MAXTHREADS 0
+#  endif
 #endif
 
 /**
  * Canonical identifier for an invalid PID.
  */
-#define KERNEL_PID_UNDEF 0
+#define KERNEL_PID_UNDEF ((kernel_pid_t)0)
 
 /**
  * The first valid PID (inclusive).
  */
-#define KERNEL_PID_FIRST (KERNEL_PID_UNDEF + 1)
+#define KERNEL_PID_FIRST ((kernel_pid_t)(KERNEL_PID_UNDEF + 1))
 
 /**
  * The last valid PID (inclusive).
  */
-#define KERNEL_PID_LAST (KERNEL_PID_FIRST + MAXTHREADS - 1)
+#define KERNEL_PID_LAST ((kernel_pid_t)(KERNEL_PID_FIRST + MAXTHREADS - 1))
 
 /**
  * Macro for printing formatter
@@ -123,9 +123,9 @@ extern "C" {
 /**
  * Enables detection of stack overflows and measures stack usage when != 0
  */
-#ifndef SCHED_TEST_STACK
-#define SCHED_TEST_STACK    1
-#endif  /* SCHED_TEST_STACK */
+#  ifndef SCHED_TEST_STACK
+#    define SCHED_TEST_STACK 1
+#  endif  /* SCHED_TEST_STACK */
 #endif  /* DEVELHELP */
 
 /**
