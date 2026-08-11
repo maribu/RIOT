@@ -78,6 +78,10 @@
 # - readability-isolate-declaration:
 #       Multiple declaration in a single line is not disallowed by the coding
 #       convention used a lot in the code base. So let's allow it.
+# - bugprone-casting-through-void:
+#       clang-tidy is suggesting to use `reinterpret_cast`, which is an C++
+#       exclusive language feature that is not valid in C code.
+#
 # Warning
 # -------
 #
@@ -93,6 +97,7 @@ Checks: "bugprone-*,
          portability-*,
          readability-*,
          -bugprone-assignment-in-if-condition,
+         -bugprone-casting-through-void,
          -bugprone-easily-swappable-parameters,
          -bugprone-narrowing-conversions,
          -bugprone-reserved-identifier,
